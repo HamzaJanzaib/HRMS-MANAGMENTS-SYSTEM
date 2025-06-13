@@ -1,7 +1,8 @@
 import { UserModel } from '../models/Index.js';
 import { verifyToken } from '../Utils/Index.js';
 
-export const authMiddleware = async (req, res, next) => {
+// General authentication middleware
+export const authenticateUser = async (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {
         return res.status(401).json({
@@ -23,41 +24,38 @@ export const authMiddleware = async (req, res, next) => {
     }
 };
 
-export const IsAdmin = async (req, res, next) => {
-    const token = req.cookies.AdminToken;
-
-    if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: 'Unauthorized: No token provided'
-        });
-    }
-
+export const authenticateRole = async (req, res, next) => {
     try {
-        const decoded = await verifyToken(token);
-
-        // Find the user by ID
-        const user = await UserModel.findById(decoded.id).select('-password');
-
-        // Check if the user is an admin
-        if (user.role !== 'admin') {
-            return res.status(403).json({
+        // Ensure user is authenticated and user id is available
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
                 success: false,
-                message: 'Forbidden: Admin access only'
+                message: 'Unauthorized: No user information found'
             });
         }
 
-        // Attach the admin data to the request object for use in the next middleware
-        req.admin = { id: user._id, role: user.role };
-        req.token = token;
+        // Find user by id and get details (excluding password)
+        const user = await UserModel.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
 
-        // Proceed to the next middleware or route handler
+        // Attach user details and role to request
+        req.user = {
+            id: user._id,
+            role: user.role,
+            details: user
+        };
+
         next();
     } catch (error) {
-        console.error('Token verification failed:', error);
-        return res.status(401).json({
+        console.error('Role check failed:', error);
+        return res.status(500).json({
             success: false,
-            message: 'Unauthorized: Invalid token'
+            message: 'Internal server error'
         });
     }
 };
