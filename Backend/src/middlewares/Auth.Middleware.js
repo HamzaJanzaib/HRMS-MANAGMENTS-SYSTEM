@@ -1,5 +1,5 @@
-import { UserModel } from '../models/Index.js';
-import { verifyToken } from '../Utils/Index.js';
+import User from '../models/User.js';
+import { verifyToken } from '../utils/Jwt.js';
 
 // General authentication middleware
 export const authenticateUser = async (req, res, next) => {
@@ -35,7 +35,7 @@ export const authenticateRole = async (req, res, next) => {
         }
 
         // Find user by id and get details (excluding password)
-        const user = await UserModel.findById(req.user.id).select('-password');
+        const user = await User.findById(req.user.id).select('-password');
         if (!user) {
             return res.status(404).json({
                 success: false,

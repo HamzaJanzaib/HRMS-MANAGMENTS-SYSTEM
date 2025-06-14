@@ -98,7 +98,6 @@ This system supports multiple roles and layers of management:
 | resumeUrl        | String   | CV/Resume URL                     |
 | interviewId      | ObjectId | Reference to Interview (optional) |
 | departmentId     | ObjectId | Reference to Department           |
-| branchId         | ObjectId | Reference to Branch               |
 | companyId        | ObjectId | Reference to Company              |
 | isDepartmentLead | Boolean  | Lead flag                         |
 | blocked          | Boolean  | Access control                    |

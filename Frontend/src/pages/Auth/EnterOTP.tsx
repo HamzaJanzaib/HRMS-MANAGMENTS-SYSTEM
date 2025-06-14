@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAppContext } from "@/context/AppContext"
 import { cn } from "@/lib/utils"
 import { ChevronLeft } from "lucide-react"
 import { useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 const OTP_LENGTH = 6;
 
 const EnterOTP = () => {
-    const [loading, setLoading] = useState(false)
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const { navigate } = useAppContext();
 
     const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
     const inputsRef = useRef<Array<HTMLInputElement | null>>([]);

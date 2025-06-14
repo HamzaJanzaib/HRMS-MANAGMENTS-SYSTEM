@@ -1,24 +1,51 @@
 import { Logo } from "@/assets/assest"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAppContext } from "@/context/AppContext"
 import { cn } from "@/lib/utils"
+import { register } from "@/services/Auth/Register"
+import type { Response } from "@/types/Types"
 import { Label } from "@radix-ui/react-label"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const { navigate, toast } = useAppContext();
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
-  }
+    const registerDetails = {
+      username,
+      email,
+      password
+    };
+
+    try {
+      const res = await register(registerDetails) as Response;
+      if (res.success === true) {
+        navigate('/login');
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Fetch error:", error.message);
+      } else {
+        console.error("An unknown error occurred:", error);
+      }
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className={cn("flex max-w-lg w-full items-center justify-center min-h-screen ")}>
@@ -30,12 +57,12 @@ const Register = () => {
             <h4 className={cn("text-2xl font-bold text-gray-900")}>HRMS</h4>
           </div>
           {/* Welcome Text */}
-            <div>
+          <div>
             <h5 className={cn("text-2xl font-bold flex items-center gap-2")}>
               Create Account <span role="img" aria-label="wave">👋</span>
             </h5>
             <p className={cn("text-gray-400 text-sm mt-1")}>Please register to continue</p>
-            </div>
+          </div>
           {/* Login Form */}
           <form onSubmit={onSubmit} className={cn("space-y-5  mt-6")}>
             <div>
@@ -45,9 +72,9 @@ const Register = () => {
               <Input
                 id="username"
                 type="text"
-                value={userName}
+                value={username}
                 placeholder="Hamza janzaib"
-                onChange={({ target }) => setUserName(target.value)}
+                onChange={({ target }) => setUsername(target.value)}
                 className={cn("w-full")}
               />
             </div>
@@ -93,7 +120,7 @@ const Register = () => {
                 </Button>
               </div>
             </div>
-          
+
             <Button
               type="submit"
               className={cn("w-full cursor-pointer font-semibold")}

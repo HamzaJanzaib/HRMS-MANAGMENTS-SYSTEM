@@ -1,12 +1,13 @@
-import { comparePassword, hashedPassword } from './../utils/Bcrypt';
-import { createToken } from './../utils/Jwt';
+import User from '../models/User.js';
+import { comparePassword, hashedPassword } from './../utils/Bcrypt.js';
+import { createToken } from './../utils/Jwt.js';
 
 // Controller For  Register
 export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        const existingEmail = await UserModel.findOne({ email });
+        const existingEmail = await User.findOne({ email });
         if (existingEmail) {
             return res.status(400).json({
                 success: false,
@@ -16,7 +17,7 @@ export const register = async (req, res) => {
 
         const hash = await hashedPassword(password);
 
-        const newUser = await UserModel.create({
+        const newUser = await User.create({
             username,
             email,
             password: hash,
@@ -35,7 +36,7 @@ export const register = async (req, res) => {
             message: "User registered successfully",
             data: {
                 email: newUser.email,
-                name: newUser.fullname
+                name: newUser.username
             }
         });
     } catch (error) {
@@ -60,7 +61,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const user = await UserModel.findOne({ email });
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(401).json({
@@ -94,7 +95,7 @@ export const login = async (req, res) => {
                 token,
                 user: {
                     id: user._id,
-                    fullname: user.fullname,
+                    name: user.username,
                     email: user.email,
                     role: user.role
                 }
@@ -145,7 +146,7 @@ export const verify = async (req, res) => {
             });
         }
 
-        const user = await UserModel.findById(id).select("-password");
+        const user = await User.findById(id).select("-password");
 
         if (!user) {
             return res.status(404).json({
@@ -181,7 +182,7 @@ export const profile = async (req, res) => {
             });
         }
 
-        const user = await UserModel.findById(userId)
+        const user = await User.findById(userId)
             .select("-password")
 
 

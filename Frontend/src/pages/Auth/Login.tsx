@@ -2,11 +2,14 @@ import { Logo } from "@/assets/assest"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
+import { useAppContext } from "@/context/AppContext"
 import { cn } from "@/lib/utils"
+import { login } from "@/services/Auth/Login"
+import type { Response } from "@/types/Types"
 import { Label } from "@radix-ui/react-label"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,12 +17,35 @@ const Login = () => {
   const [rememerMe, setRememerMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const { navigate, toast } = useAppContext();
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
-  }
+    const loginDetails = {
+      email,
+      password
+    };
+
+    try {
+      const res = await login(loginDetails) as Response;
+      if (res.success === true) {
+        navigate('/');
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Fetch error:", error.message);
+      } else {
+        console.error("An unknown error occurred:", error);
+      }
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>

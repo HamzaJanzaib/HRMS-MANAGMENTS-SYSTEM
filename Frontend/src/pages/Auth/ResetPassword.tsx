@@ -1,11 +1,12 @@
 import { Logo, welcomback } from "@/assets/assest"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAppContext } from "@/context/AppContext"
 import { cn } from "@/lib/utils"
 import { Label } from "@radix-ui/react-label"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');
@@ -132,7 +133,8 @@ export default ResetPassword
 
 
 const SuccessModel = () => {
-    const navigate = useNavigate()
+    const { navigate } = useAppContext();
+
     return (
         <>
             <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm flex flex-col items-center">

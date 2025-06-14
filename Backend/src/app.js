@@ -4,6 +4,7 @@ import connectDB from './config/ConnectDB.js';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import helmet from "helmet";
+import AuthRoutes from "./routes/Auth.route.js"
 dotenv.config();
 
 
@@ -32,7 +33,7 @@ app.use(cookieParser());
 
 // api 
 
-
+app.use('/api/v1/user' , AuthRoutes)
 
 
 export default app

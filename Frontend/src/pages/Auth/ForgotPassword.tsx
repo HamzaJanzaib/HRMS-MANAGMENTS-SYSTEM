@@ -1,15 +1,17 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAppContext } from "@/context/AppContext"
 import { cn } from "@/lib/utils"
 import { Label } from "@radix-ui/react-label"
 import { ChevronLeft } from "lucide-react"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false)
-    const navigate = useNavigate();
+    const { navigate } = useAppContext();
+
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
