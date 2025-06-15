@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import Employee from '../models/Employee.js';
 import { comparePassword, hashedPassword } from './../utils/Bcrypt.js';
 import { createToken } from './../utils/Jwt.js';
 
@@ -7,17 +7,17 @@ export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        const existingEmail = await User.findOne({ email });
+        const existingEmail = await Employee.findOne({ email });
         if (existingEmail) {
             return res.status(400).json({
                 success: false,
                 message: "Email already exists"
             });
         }
-
+        
         const hash = await hashedPassword(password);
 
-        const newUser = await User.create({
+        const newUser = await Employee.create({
             username,
             email,
             password: hash,
@@ -61,7 +61,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
+        const user = await Employee.findOne({ email });
 
         if (!user) {
             return res.status(401).json({
@@ -93,12 +93,7 @@ export const login = async (req, res) => {
             message: "Login successful",
             data: {
                 token,
-                user: {
-                    id: user._id,
-                    name: user.username,
-                    email: user.email,
-                    role: user.role
-                }
+                user,
             }
         });
     } catch (error) {
@@ -146,7 +141,7 @@ export const verify = async (req, res) => {
             });
         }
 
-        const user = await User.findById(id).select("-password");
+        const user = await Employee.findById(id).select("-password");
 
         if (!user) {
             return res.status(404).json({
@@ -182,7 +177,7 @@ export const profile = async (req, res) => {
             });
         }
 
-        const user = await User.findById(userId)
+        const user = await Employee.findById(userId)
             .select("-password")
 
 

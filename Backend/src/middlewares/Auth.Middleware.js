@@ -1,4 +1,5 @@
-import User from '../models/User.js';
+
+import Employee from '../models/Employee.js';
 import { verifyToken } from '../utils/Jwt.js';
 
 // General authentication middleware
@@ -35,7 +36,7 @@ export const authenticateRole = async (req, res, next) => {
         }
 
         // Find user by id and get details (excluding password)
-        const user = await User.findById(req.user.id).select('-password');
+        const user = await Employee.findById(req.user.id).select('-password');
         if (!user) {
             return res.status(404).json({
                 success: false,
